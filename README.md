@@ -1,5 +1,8 @@
 # FIX2JSON
 
+Converts a FIX protocol message into pretty-printed JSON, mapping numeric tags
+to human-readable field names.
+
 ```
-mvn exec:java -Dexec.mainClass="com.example.FIXMsgToJSON"
+cargo run
 ```
