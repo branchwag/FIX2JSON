@@ -1,9 +1,7 @@
+use std::io::Write;
+
 use serde::Serialize;
 use serde_json::{Map, Value};
-
-/// The FIX message to convert. Embedded at compile time from the sample file,
-/// which carries the SOH (\u{1}) field delimiters used by the FIX protocol.
-const FIX_MSG: &str = include_str!("../sampleFIX358.txt");
 
 /// FIX tag -> human-readable field name.
 // mebbe replace with xml dictionary later
@@ -47,8 +45,17 @@ fn field_names() -> Map<String, Value> {
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let field_names = field_names();
 
+    // Prompt for the file containing the FIX message.
+    print!("Enter path to FIX message file: ");
+    std::io::stdout().flush()?;
+    let mut path = String::new();
+    std::io::stdin().read_line(&mut path)?;
+    let path = path.trim();
+
+    let fix_msg = std::fs::read_to_string(path)?;
+
     let mut json = Map::new();
-    for field in FIX_MSG.trim().split('\u{1}') {
+    for field in fix_msg.trim().split('\u{1}') {
         if let Some((tag, value)) = field.split_once('=') {
             let key = match field_names.get(tag) {
                 Some(Value::String(name)) => name.clone(),
